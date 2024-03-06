@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title>Add styles made with Mapbox Studio to a Leaflet map</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.js'></script>
+<link href='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.css' rel='stylesheet' />
+<style>
+  body { margin:0; padding: 0; }
+  #map {height:600px; width:100%; }
+</style>
+</head>
+
+<body>
+<div id='map'></div>
+
+<!-- Add a checkbox for toggling the map layer -->
+<input type="checkbox" id="toggleLayer" checked>
+<label for="toggleLayer">Toggle Layer</label>
+
+<script>
+
+L.mapbox.accessToken = 'pk.eyJ1Ijoid2lzdHl3aXN0IiwiYSI6ImNsdGc0NWszNjBxNjUyam1wemczeDlhYzEifQ.67VGcoeP3lE9ZRfICKiewA';
+
+var map = L.map('map').setView([51.0284,-114.019], 15);
+
+// Add tiles from the Mapbox Static Tiles API
+var tileLayerOn = L.tileLayer(
+    'https://api.mapbox.com/styles/v1/wistywist/cltbpxtgx009t01r52vl8csor/tiles/{z}/{x}/{y}?access_token=' + L.mapbox.accessToken, {
+        tileSize: 512,
+        zoomOffset: -1,
+        attribution: '© <a href="https://www.mapbox.com/contribute/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    var tileLayerOff = L.tileLayer(
+        'https://api.mapbox.com/styles/v1/wistywist/cltg4pfw800vk01oi6tzhb169/tiles/{z}/{x}/{y}?access_token=' + L.mapbox.accessToken, {
+        tileSize: 512,
+        zoomOffset: -1,
+        attribution: '© <a href="https://www.mapbox.com/contribute/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+// Function to toggle the visibility of the tile layer
+function toggleLayer() {
+    if (tileLayerOn) {
+        if (map.hasLayer(tileLayerOn)) {
+            map.removeLayer(tileLayerOn);
+            map.addLayer(tileLayerOff)
+        } else {
+            map.addLayer(tileLayerOn);
+            map.removeLayer(tileLayerOff);
+        }
+    }
+}
+
+// Add event listener to the checkbox for toggling the layer
+document.getElementById('toggleLayer').addEventListener('change', function() {
+    toggleLayer();
+});
+</script>
+</body>
+</html>

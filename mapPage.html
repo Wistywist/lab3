@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calgary Building Permits Map</title>
     <!-- Include Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="leaflet.css" />
     <link rel="stylesheet" href="format.css">
+  
+    <link href='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.css' rel='stylesheet' /> 
     <style>
         #map {
             height: 600px;
@@ -34,27 +36,57 @@
         will appear on the map, and are interactable giving you information about said permits!
     </div>
 
-
-    <!-- Map -->
-
-    
+    <input type="checkbox" id="toggleLayer" checked>
+    <label for="toggleLayer">Toggle Layer</label>   
 
 
     <!-- Include Leaflet JavaScript -->
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <!-- Include Leaflet.markercluster JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster.js"></script>
-   
+    <script src="leaflet-src.js"></script>
+
+
+    <script src='https://api.mapbox.com/mapbox.js/v3.3.1/mapbox.js'></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier-Leaflet/0.2.6/oms.js"></script>
+    <script src="Leaflet.markercluster-1.4.1/dist/leaflet.markercluster-src.js"></script>
 
     <script>
+        L.mapbox.accessToken = 'pk.eyJ1Ijoid2lzdHl3aXN0IiwiYSI6ImNsdGc0NWszNjBxNjUyam1wemczeDlhYzEifQ.67VGcoeP3lE9ZRfICKiewA';
         // Initialize the map
         var map = L.map('map').setView([51.0447, -114.0719], 12);
 
-        // Add base map layer
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        var tileLayerOff = L.tileLayer(
+            'https://api.mapbox.com/styles/v1/wistywist/cltg4pfw800vk01oi6tzhb169/tiles/{z}/{x}/{y}?access_token=' + L.mapbox.accessToken, {
+            tileSize: 512,
+            zoomOffset: -1,
+            attribution: '© <a href="https://www.mapbox.com/contribute/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
+
+        // Add base map layer
+        var tileLayerOn = L.tileLayer(
+            'https://api.mapbox.com/styles/v1/wistywist/cltbpxtgx009t01r52vl8csor/tiles/{z}/{x}/{y}?access_token=' + L.mapbox.accessToken, {
+            tileSize: 512,
+            zoomOffset: -1,
+            attribution: '© <a href="https://www.mapbox.com/contribute/">Mapbox</a> © <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+
+
+        // Function to toggle the visibility of the tile layer
+        function toggleLayer() {
+            if (tileLayerOn) {
+                if (map.hasLayer(tileLayerOn)) {
+                    map.removeLayer(tileLayerOn);
+                    map.addLayer(tileLayerOff)
+                } else {
+                    map.addLayer(tileLayerOn);
+                    map.removeLayer(tileLayerOff);
+                }
+            }
+        }
+
+        // Add event listener to the checkbox for toggling the layer
+        document.getElementById('toggleLayer').addEventListener('change', function() {
+            toggleLayer();
+        });
 
         // Initialize OverlappingMarkerSpiderfier
         var oms = new OverlappingMarkerSpiderfier(map);
@@ -113,6 +145,9 @@
         // Initial search for building permits when the page loads
         var currentDate = new Date().toISOString().split('T')[0];
         searchBuildingPermits(currentDate, currentDate); // Search for permits issued today
+
+
+
+        
     </script>
-</body>
-</html>
+
